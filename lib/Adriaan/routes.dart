@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nobel_prizes/main.dart';
+
+import 'package:hepl_progra_mobile/Adriaan/main_adri.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
