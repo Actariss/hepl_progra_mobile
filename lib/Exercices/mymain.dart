@@ -104,7 +104,9 @@ class _ToDoListState extends State<ToDoList> {
                     checkIt[index]['checked'] = value;
                     TaskController.setTaskState(checkIt[index]['text'], value!);
                     });
-                    print(TaskController.getTaskState(checkIt[index]['text']));
+                    TaskController.getTaskState(checkIt[index]['text']).then((bool?state){
+                      print("${checkIt[index]['text']} is $state");
+                    });
                     },
                     );
                     },
