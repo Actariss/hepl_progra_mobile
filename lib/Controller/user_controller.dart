@@ -1,11 +1,11 @@
 
 import 'package:hepl_progra_mobile/Controller/DatabaseController.dart';
 import 'package:sqflite/sqflite.dart';
-import '../domain/User.dart';
+import '../../domain/User.dart';
 
 class UserController {
   static Future<List<Map<String, dynamic>>> getUser() async {
-  final db = await DatabaseController.getDatabase();
+  final db = await DatabaseController.getDatabaseUser();
 
   final List<Map<String, dynamic>> userMap = await db.query(
   'users'
@@ -15,7 +15,7 @@ class UserController {
 }
   static Future<void> insertUser(String username, String password) async{
     User user = User(name: username, password: password);
-    final db = await DatabaseController.getDatabase();
+    final db = await DatabaseController.getDatabaseUser();
 
     await db.insert(
       "users",
