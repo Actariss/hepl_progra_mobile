@@ -25,14 +25,14 @@ class ToDoList extends StatefulWidget {
 
 class _ToDoListState extends State<ToDoList> {
   final taskController = TextEditingController();
-  late Future<List<Map<String, Object?>>>taskListInit;
+  late Future<List<Map<String, Object?>>> taskListInit;
 
   bool checked = false;
   bool mabool = false;
   final List<Map<String, dynamic>> checkIt = [];
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     taskListInit = TaskController.getTasks();
   }
@@ -44,101 +44,96 @@ class _ToDoListState extends State<ToDoList> {
           child: Column(
         children: [
           const SizedBox(height: 100),
-          Checkbox(value: mabool, onChanged: (value){
-            setState(() {
-              mabool=value!;
-            });}),
-          SizedBox(
-          width: 300,
-          child: TextFormField(
-            controller: taskController,
-            decoration: const InputDecoration(
-                label: Text("Your Task"),
-                filled: true,
-                hintText: "Your task here",
-                border: OutlineInputBorder(borderRadius: BorderRadius. all(Radius. circular(10.0)))),
-          ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-
-          ElevatedButton(
-              onPressed: () {
+          Checkbox(
+              value: mabool,
+              onChanged: (value) {
                 setState(() {
-                  if (taskController.text.isNotEmpty) {
-                    checkIt.add({
-                      'text': taskController.text,
-                      'checked': false,
-                    });
-                    TaskController.insertTask(taskController.text, false);
-
-                    taskController.clear();
-                  }
+                  mabool = value!;
                 });
-              },
-              child: const Text("Add Task")),
-          ElevatedButton(
-              onPressed: (){setState(() {
-                TaskController.deleteTasks();
-                checkIt.clear();
-              });},
-              child: const Text("Clear Data")),
+              }),
+          SizedBox(
+            width: 300,
+            child: TextFormField(
+              controller: taskController,
+              decoration: const InputDecoration(
+                  label: Text("Your Task"),
+                  filled: true,
+                  hintText: "Your task here",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)))),
+            ),
+          ),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    if (taskController.text.isNotEmpty) {
+                      checkIt.add({
+                        'task_name': taskController.text,
+                        'checked': false,
+                      });
+
+
+
+                    }
+                  });
+                  TaskController.insertTask(taskController.text, false);
+                  print("added to bd "+ taskController.text);
+                  taskController.clear();
+                },
+                child: const Text("Add Task")),
+            ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    TaskController.deleteTasks();
+                    checkIt.clear();
+                  });
+                },
+                child: const Text("Clear Data")),
           ]),
           Expanded(
               child: FutureBuilder(
-                future: taskListInit,
-                builder: (context, snapshot) {
-                  if(snapshot.hasData){
-                    var liste;
-                    for (liste in snapshot.data!){
-                      checkIt.add(liste);
-                    }
-                    return ListView.builder(
+            future: taskListInit,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                var liste;
+                for (liste in snapshot.data!) {
+                  checkIt.add(liste);
+                }
+                return ListView.builder(
                     itemCount: checkIt.length,
                     itemBuilder: (context, index) {
                       return Row(
                         children: [
-                      FutureBuilder<bool?>(
-                      future: TaskController.getTaskState(snapshot.data![index]['task_name'].toString()), // Obtenez l'état
-                      builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                      // Affichez un indicateur de chargement en attendant les données
-                      return const CircularProgressIndicator();
-                      }
-                      if (snapshot.hasError) {
-                      // Gérez les erreurs ici
-                      return Text("Error: ${snapshot.error}");
-                      }
-                      // Utilisez la valeur une fois qu'elle est chargée
-                      bool? state = snapshot.data;
-                      return Checkbox(
-                      value: state,
-                      onChanged: (value) {
-                      setState(() {
-                      checkIt[index]['checked'] = value;
-                      print(checkIt[index]['checked']);
-                      TaskController.setTaskState(checkIt[index]['task_name'], value!);
-                      });
-                      },
-                      );
-                      },
-                      ),
-
-                      Expanded(
-                            child: Text(checkIt[index]['task_name']??""),
+                          Checkbox(
+                            value: checkIt[index]["checked"] == "true",
+                            onChanged: (value) {
+                              print(checkIt[index]);
+                              setState(() {
+                                checkIt[index]['checked'] = value.toString();
+                                print(
+                                    "Oui Oui Oui ${checkIt[index]['checked']} pour ${checkIt[index]['task_name']}");
+                              });
+                              TaskController.setTaskState(
+                                  checkIt[index]['task_name'], value!);
+                            },
+                          ),
+                          Expanded(
+                            child: Text(checkIt[index]['task_name']),
                           ),
                         ],
                       );
-                    });}
-                  else if (snapshot.hasError){
-                    const Text("Error");
-                  }
-                  else if (snapshot.connectionState == ConnectionState.waiting){return CircularProgressIndicator();}
-                  else {return Text("${snapshot.data ?? ''}");}
-                  return const Text("");
-                },
-              )),
+                    });
+              } else if (snapshot.hasError) {
+                const Text("Error");
+              } else if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              } else {
+                return Text("${snapshot.data ?? ''}");
+              }
+              return const Text("");
+            },
+          )),
         ],
       )
 
