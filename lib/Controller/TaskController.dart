@@ -36,4 +36,8 @@ static Future<void> setTaskState(String taskName, bool taskState) async{
       whereArgs: [taskName]
   );
 }
+static Future<void> deleteTasks() async{
+    final db = await DatabaseController.getDatabaseTask();
+    await db.delete("tasks");
+}
 }
